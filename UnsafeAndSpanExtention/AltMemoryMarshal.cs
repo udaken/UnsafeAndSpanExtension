@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace UnsafeAndSpanExtention
 {
@@ -18,6 +19,7 @@ namespace UnsafeAndSpanExtention
             return MemoryMarshal.CreateSpan(ref reference, length);
 #endif
         }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> CreateReadOnlySpan<T>(ref T reference, int length)
             where T : unmanaged
@@ -31,5 +33,9 @@ namespace UnsafeAndSpanExtention
             return MemoryMarshal.CreateReadOnlySpan(ref reference, length);
 #endif
         }
+
+        public unsafe static IntPtr AsDangerousIntPtr<T>(Span<T> source)
+            => new IntPtr(Unsafe.AsPointer(ref source.GetPinnableReference()));
+
     }
 }

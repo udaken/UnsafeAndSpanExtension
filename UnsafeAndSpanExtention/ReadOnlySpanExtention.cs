@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Runtime.InteropServices;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace UnsafeAndSpanExtention
 {
@@ -36,34 +36,84 @@ namespace UnsafeAndSpanExtention
         public static bool TryReadGuid(this ReadOnlySpan<byte> source, out Guid value)
          => MemoryMarshal.TryRead(source, out value);
 
+        public static int GetAnsiStringLength(this ReadOnlySpan<sbyte> source)
+        {
+            var length = source.IndexOf((sbyte)0);
+            return (length == -1) ? source.Length : length;
+        }
+
+        public static string ToAnsiString(this ReadOnlySpan<sbyte> source)
+         => System.Text.Encoding.Default.GetString(MemoryMarshal.AsBytes(source.Slice(0, source.GetAnsiStringLength())));
+
         public static int GetAnsiStringLength(this ReadOnlySpan<byte> source)
         {
             var length = source.IndexOf((byte)0);
             return (length == -1) ? source.Length : length;
         }
 
-        public static int GetUtf16StringLength(this ReadOnlySpan<byte> source)
-         => GetUtf16StringLength(MemoryMarshal.Cast<byte, char>(source));
+        public static string ToAnsiString(this ReadOnlySpan<byte> source)
+         => GetString(System.Text.Encoding.Default, source.Slice(0, source.GetAnsiStringLength()));
 
-        public static int GetUtf16StringLength(this ReadOnlySpan<char> source)
+        public static int GetNullTerminateStringLength(this ReadOnlySpan<char> source)
         {
             var length = source.IndexOf('\0');
             return (length == -1) ? source.Length : length;
         }
 
         public static string ToNullTerminateString(this ReadOnlySpan<char> source)
-         => source.Slice(0, source.GetUtf16StringLength()).ToString();
+         => source.Slice(0, source.GetNullTerminateStringLength()).ToString();
 
-        public static Span<T> Cast<T>(this Span<byte> span) where T : struct
-         => MemoryMarshal.Cast<byte, T>(span);
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ReadOnlySpan<T> Cast<T>(this ReadOnlySpan<byte> span) where T : struct
          => MemoryMarshal.Cast<byte, T>(span);
 
-        public static ref T AsRef<T>(this Span<byte> span) where T : struct
-         => ref MemoryMarshal.GetReference(span.Cast<T>());
-
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref readonly T AsRef<T>(this ReadOnlySpan<byte> span) where T : struct
          => ref MemoryMarshal.GetReference(span.Cast<T>());
+
+#if NETSTANDARD2_0
+        public unsafe static int GetByteCount(this System.Text.Encoding encoding, ReadOnlySpan<char> chars)
+        {
+            fixed (char* p = chars)
+            {
+                return encoding.GetByteCount(p, chars.Length);
+            }
+
+        }
+
+        public unsafe static int GetBytes(this System.Text.Encoding encoding, ReadOnlySpan<char> chars, Span<byte> bytes)
+        {
+            fixed (byte* p = bytes)
+            fixed (char* s = chars)
+            {
+                return encoding.GetBytes(s, chars.Length, p, bytes.Length);
+            }
+        }
+
+        public unsafe static int GetCharCount(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes)
+        {
+            fixed (byte* p = bytes)
+            {
+                return encoding.GetCharCount(p, bytes.Length);
+            }
+        }
+
+        public unsafe static int GetChars(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes, Span<char> chars)
+        {
+            fixed (byte* p = bytes)
+            fixed (char* s = chars)
+            {
+                return encoding.GetChars(p, bytes.Length, s, chars.Length);
+            }
+        }
+
+        public unsafe static string GetString(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes)
+        {
+            fixed (byte* p = bytes)
+            {
+                return encoding.GetString(p, bytes.Length);
+            }
+        }
     }
+#endif
 }
