@@ -38,5 +38,12 @@ namespace UnsafeAndSpanExtension
         public unsafe static IntPtr AsDangerousIntPtr<T>(Span<T> source)
             => new IntPtr(Unsafe.AsPointer(ref MemoryMarshal.GetReference(source)));
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static Span<T> DangerousCreateSpan<T>(IntPtr pointer, int length)
+            => new Span<T>(pointer.ToPointer(), length);
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public unsafe static ReadOnlySpan<T> DangerousCreateReadOnlySpan<T>(IntPtr pointer, int length)
+            => new ReadOnlySpan<T>(pointer.ToPointer(), length);
     }
 }
