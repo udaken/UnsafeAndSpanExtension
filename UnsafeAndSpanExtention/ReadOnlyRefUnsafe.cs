@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UnsafeAndSpanExtention
+namespace UnsafeAndSpanExtension
 {
     public static class ReadOnlyRefUnsafe
     {

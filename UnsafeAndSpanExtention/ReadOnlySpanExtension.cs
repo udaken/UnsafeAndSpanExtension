@@ -2,9 +2,9 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UnsafeAndSpanExtention
+namespace UnsafeAndSpanExtension
 {
-    public static class ReadOnlySpanExtention
+    public static class ReadOnlySpanExtension
     {
         public static bool TryRead<T>(this ReadOnlySpan<byte> source, out T value) where T : struct
          => MemoryMarshal.TryRead<T>(source, out value);
@@ -52,7 +52,7 @@ namespace UnsafeAndSpanExtention
         }
 
         public static string ToAnsiString(this ReadOnlySpan<byte> source)
-         => GetString(System.Text.Encoding.Default, source.Slice(0, source.GetAnsiStringLength()));
+         => SystemTextExtension.GetString(System.Text.Encoding.Default, source.Slice(0, source.GetAnsiStringLength()));
 
         public static int GetNullTerminateStringLength(this ReadOnlySpan<char> source)
         {
@@ -70,50 +70,5 @@ namespace UnsafeAndSpanExtention
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static ref readonly T AsRef<T>(this ReadOnlySpan<byte> span) where T : struct
          => ref MemoryMarshal.GetReference(span.Cast<T>());
-
-#if NETSTANDARD2_0
-        public unsafe static int GetByteCount(this System.Text.Encoding encoding, ReadOnlySpan<char> chars)
-        {
-            fixed (char* p = chars)
-            {
-                return encoding.GetByteCount(p, chars.Length);
-            }
-
-        }
-
-        public unsafe static int GetBytes(this System.Text.Encoding encoding, ReadOnlySpan<char> chars, Span<byte> bytes)
-        {
-            fixed (byte* p = bytes)
-            fixed (char* s = chars)
-            {
-                return encoding.GetBytes(s, chars.Length, p, bytes.Length);
-            }
-        }
-
-        public unsafe static int GetCharCount(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes)
-        {
-            fixed (byte* p = bytes)
-            {
-                return encoding.GetCharCount(p, bytes.Length);
-            }
-        }
-
-        public unsafe static int GetChars(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes, Span<char> chars)
-        {
-            fixed (byte* p = bytes)
-            fixed (char* s = chars)
-            {
-                return encoding.GetChars(p, bytes.Length, s, chars.Length);
-            }
-        }
-
-        public unsafe static string GetString(this System.Text.Encoding encoding, ReadOnlySpan<byte> bytes)
-        {
-            fixed (byte* p = bytes)
-            {
-                return encoding.GetString(p, bytes.Length);
-            }
-        }
     }
-#endif
 }

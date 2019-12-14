@@ -2,7 +2,7 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UnsafeAndSpanExtention
+namespace UnsafeAndSpanExtension
 {
     public static class AltMemoryMarshal
     {
@@ -34,8 +34,9 @@ namespace UnsafeAndSpanExtention
 #endif
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public unsafe static IntPtr AsDangerousIntPtr<T>(Span<T> source)
-            => new IntPtr(Unsafe.AsPointer(ref source.GetPinnableReference()));
+            => new IntPtr(Unsafe.AsPointer(ref MemoryMarshal.GetReference(source)));
 
     }
 }

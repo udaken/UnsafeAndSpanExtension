@@ -2,26 +2,26 @@
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-namespace UnsafeAndSpanExtention
+namespace UnsafeAndSpanExtension
 {
-    public static class SpanExtention
+    public static class SpanExtension
     {
         public static int GetAnsiStringLength(this Span<sbyte> source)
-            => ReadOnlySpanExtention.GetAnsiStringLength(source);
+            => ReadOnlySpanExtension.GetAnsiStringLength(source);
 
         public static string ToAnsiString(this Span<sbyte> source)
-         => ReadOnlySpanExtention.ToAnsiString(source);
+         => ReadOnlySpanExtension.ToAnsiString(source);
 
         public static int GetAnsiStringLength(this Span<byte> source)
-            => ReadOnlySpanExtention.GetAnsiStringLength(source);
+            => ReadOnlySpanExtension.GetAnsiStringLength(source);
         public static string ToAnsiString(this Span<byte> source)
-         => ReadOnlySpanExtention.ToAnsiString(source);
+         => ReadOnlySpanExtension.ToAnsiString(source);
 
         public static int GetNullTerminateStringLength(this Span<char> source)
-            => ReadOnlySpanExtention.GetNullTerminateStringLength(source);
+            => ReadOnlySpanExtension.GetNullTerminateStringLength(source);
 
         public static string ToNullTerminateString(this Span<char> source)
-         => ReadOnlySpanExtention.ToNullTerminateString(source);
+         => ReadOnlySpanExtension.ToNullTerminateString(source);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static Span<T> Cast<T>(this Span<byte> span) where T : struct
