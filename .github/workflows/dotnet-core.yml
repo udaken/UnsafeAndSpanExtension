@@ -9,13 +9,15 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      DOTNET_NOLOGO: true
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 3.1.301
+        dotnet-version: 3.1.x
     - name: Install dependencies
       run: dotnet restore
     - name: Build
@@ -24,4 +26,4 @@ jobs:
       run: dotnet test --no-restore --verbosity normal
     - name: Nuget
       run: dotnet pack --configuration Release --include-symbols
-      
+   
